@@ -14,6 +14,18 @@ export const NavigationMode =
 };
 
 /**
+ * Camera Animation mode.
+ * @enum
+ */
+export const AnimationMode =
+{
+    /** Animation on. */
+	On : 1,
+    /** Animation off. */
+	Off : 2
+};
+
+/**
  * Camera projection mode.
  * @enum
  */

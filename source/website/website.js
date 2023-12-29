@@ -1,7 +1,7 @@
 import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
-import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
+import { NavigationMode, ProjectionMode, AnimationMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
@@ -659,6 +659,7 @@ export class Website
         let importer = this.modelLoaderUI.GetImporter ();
         let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
         let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
+        let animationModeIndex = (this.cameraSettings.animationMode === AnimationMode.On ? 0 : 1);
 
         AddButton (this.toolbar, 'open', 'Open from your device', [], () => {
             this.OpenFileBrowserDialog ();
@@ -692,6 +693,16 @@ export class Website
             }
             this.cameraSettings.SaveToCookies ();
             this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
+        });
+        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        AddRadioButton (this.toolbar, ['rotation_on', 'rotation_off'], ['animation on', 'animation off'], animationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
+            if (buttonIndex === 0) {
+                this.cameraSettings.animationMode = AnimationMode.On;
+            } else if (buttonIndex === 1) {
+                this.cameraSettings.animationMode = AnimationMode.Off;
+            }
+            this.cameraSettings.SaveToCookies ();
+            this.sidebar.UpdateControlsVisibility ();
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], projectionModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
