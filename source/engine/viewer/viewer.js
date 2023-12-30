@@ -593,6 +593,18 @@ export class Viewer
         return url;
     }
 
+    StartRotation()
+    {
+        console.log('navigation.RotationOnY is called');
+        this.navigation.RotationOnY();
+    }
+
+    StopRotation()
+    {
+        console.log('navigation.RotationOffY is called')
+        this.navigation.RotationOffY();
+    }
+
     Destroy ()
     {
         this.Clear ();

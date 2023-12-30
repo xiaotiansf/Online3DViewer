@@ -250,6 +250,7 @@ export class Navigation
 		this.onMouseClick = null;
 		this.onMouseMove = null;
 		this.onContext = null;
+		this.si = null;
 
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
@@ -402,6 +403,7 @@ export class Navigation
 
 		if (navigationType === NavigationType.Orbit) {
 			let orbitRatio = 0.5;
+			//console.log('moveDiff: x=%d, y=%d', moveDiff.x, moveDiff.y);
 			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
 		} else if (navigationType === NavigationType.Pan) {
 			let eyeCenterDistance = CoordDistance3D (this.camera.eye, this.camera.center);
@@ -561,6 +563,29 @@ export class Navigation
 	Update ()
 	{
 		this.callbacks.onUpdate ();
+	}
+
+	DoRotationOnY = ()=>
+	{
+		let orbitRatio = 0.5;
+		let move_diff = new Coord2D (2.0, 0.0);
+		this.Orbit (move_diff.x * orbitRatio, move_diff.y * orbitRatio);
+		this.Update ();
+	}
+
+	RotationOnY = ()=>
+	{
+		if (this.si === null) {
+			this.si = setInterval(this.DoRotationOnY, 200);
+		}
+	}
+
+	RotationOffY = ()=>
+	{
+		if (this.si !== null) {
+			clearInterval(this.si);
+		}
+		this.si = null;
 	}
 
 	Click (button, mouseCoords)

@@ -698,8 +698,12 @@ export class Website
         AddRadioButton (this.toolbar, ['rotation_on', 'rotation_off'], ['animation on', 'animation off'], animationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.cameraSettings.animationMode = AnimationMode.On;
+                this.cameraSettings.navigationMode = NavigationMode.FreeOrbit;
+                this.viewer.StartRotation();
             } else if (buttonIndex === 1) {
                 this.cameraSettings.animationMode = AnimationMode.Off;
+                this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
+                this.viewer.StopRotation();
             }
             this.cameraSettings.SaveToCookies ();
             this.sidebar.UpdateControlsVisibility ();
