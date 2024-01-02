@@ -1,3 +1,4 @@
+import { MathUtils } from 'three';
 import { Coord2D, CoordDistance2D, SubCoord2D } from '../geometry/coord2d.js';
 import { CoordDistance3D, CrossVector3D, SubCoord3D, VectorAngle3D } from '../geometry/coord3d.js';
 import { DegRad, IsGreater, IsLower, IsZero } from '../geometry/geometry.js';
@@ -251,6 +252,7 @@ export class Navigation
 		this.onMouseMove = null;
 		this.onContext = null;
 		this.si = null;
+		this.animationXYAngle = 10.0;
 
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
@@ -403,7 +405,8 @@ export class Navigation
 
 		if (navigationType === NavigationType.Orbit) {
 			let orbitRatio = 0.5;
-			//console.log('moveDiff: x=%d, y=%d', moveDiff.x, moveDiff.y);
+			// console.log('movePoistion: x=%d, y=%d', this.mouse.GetPosition().x, this.mouse.GetPosition().y);
+			// console.log('moveDiff: x=%d, y=%d', moveDiff.x, moveDiff.y);
 			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
 		} else if (navigationType === NavigationType.Pan) {
 			let eyeCenterDistance = CoordDistance3D (this.camera.eye, this.camera.center);
@@ -567,8 +570,12 @@ export class Navigation
 
 	DoRotationOnY = ()=>
 	{
-		let orbitRatio = 0.5;
-		let move_diff = new Coord2D (2.0, 0.0);
+		let orbitRatio = 1.0;
+		if (this.animationXYAngle > 10.0) this.animationXYAngle = 10.0;
+		if (this.animationXYAngle < -10.0) this.animationXYAngle = -10.0;
+		let angleX = Math.cos(MathUtils.degToRad(this.animationXYAngle));
+		let angleY = Math.sin(MathUtils.degToRad(this.animationXYAngle));
+		let move_diff = new Coord2D (angleX, angleY);
 		this.Orbit (move_diff.x * orbitRatio, move_diff.y * orbitRatio);
 		this.Update ();
 	}
@@ -576,7 +583,7 @@ export class Navigation
 	RotationOnY = ()=>
 	{
 		if (this.si === null) {
-			this.si = setInterval(this.DoRotationOnY, 200);
+			this.si = setInterval(this.DoRotationOnY, 100);
 		}
 	}
 

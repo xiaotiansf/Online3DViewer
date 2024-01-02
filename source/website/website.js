@@ -697,12 +697,14 @@ export class Website
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['rotation_on', 'rotation_off'], ['animation on', 'animation off'], animationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
+            this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
             if (buttonIndex === 0) {
                 this.cameraSettings.animationMode = AnimationMode.On;
                 this.viewer.StartRotation();
             } else if (buttonIndex === 1) {
                 this.cameraSettings.animationMode = AnimationMode.Off;
                 this.viewer.StopRotation();
+                this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
             }
             this.cameraSettings.SaveToCookies ();
             this.sidebar.UpdateControlsVisibility ();
