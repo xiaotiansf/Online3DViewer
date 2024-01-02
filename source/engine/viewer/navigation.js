@@ -621,7 +621,7 @@ export class Navigation
 	RotationOnY = ()=>
 	{
 		if (this.si === null) {
-			this.si = setInterval(this.DoRotationOnY, 100);
+			this.si = setInterval(this.DoRotationOnY, 200);
 		}
 	}
 
