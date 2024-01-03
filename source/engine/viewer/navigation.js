@@ -567,6 +567,13 @@ export class Navigation
 		this.callbacks.onUpdate ();
 	}
 
+	PanXY = (moveDiffX, moveDiffY)=>
+	{
+		let eyeCenterDistance = CoordDistance3D (this.camera.eye, this.camera.center);
+		let panRatio = 0.001 * eyeCenterDistance;
+		this.Pan (moveDiffX * panRatio, moveDiffY * panRatio);
+	}
+
 	ZoomInOut = (in_ratio)=>
 	{
 		let ratio = in_ratio;
