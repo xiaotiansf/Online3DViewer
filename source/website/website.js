@@ -699,10 +699,11 @@ export class Website
             this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
             if (buttonIndex === 0) {
                 this.cameraSettings.animationMode = AnimationMode.On;
-                this.viewer.StartRotation();
+                this.viewer.RotationOnX(-10);
+                this.viewer.RotationOnY();
             } else if (buttonIndex === 1) {
                 this.cameraSettings.animationMode = AnimationMode.Off;
-                this.viewer.StopRotation();
+                this.viewer.RotationOffY();
                 this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
             }
             this.cameraSettings.SaveToCookies ();

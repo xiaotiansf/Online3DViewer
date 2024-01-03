@@ -252,9 +252,6 @@ export class Navigation
 		this.onMouseMove = null;
 		this.onContext = null;
 		this.si = null;
-		this.animationXYAngle = 10.0; //in deg
-		this.accumRadAngleY = 0.0; //in accumulated AngleY Change in rad
-		this.incrementAngleY = true; //increment AngleY
 
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
@@ -544,42 +541,6 @@ export class Navigation
 		}
 	}
 
-	OrbitWithMaxAngleYChange (angleX, angleY)
-	{
-		let radAngleX = angleX * DegRad;
-		let radAngleY = angleY * DegRad;
-		if (this.incrementAngleY === true) {
-			this.accumRadAngleY += radAngleY;
-			if (this.accumRadAngleY >= 0.15) {
-				this.incrementAngleY = false;
-			}
-		}
-		if (this.incrementAngleY === false) {
-			this.accumRadAngleY -= radAngleY;
-			radAngleY = -radAngleY;
-			if (this.accumRadAngleY <= -0.15) {
-				this.incrementAngleY = true;
-			}
-		}
-
-		let viewDirection = SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
-		let horizontalDirection = CrossVector3D (viewDirection, this.camera.up).Normalize ();
-
-		if (this.navigationMode === NavigationMode.FixedUpVector) {
-			let originalAngle = VectorAngle3D (viewDirection, this.camera.up);
-			let newAngle = originalAngle + radAngleY;
-			if (IsGreater (newAngle, 0.0) && IsLower (newAngle, Math.PI)) {
-				this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.camera.center);
-			}
-			this.camera.eye.Rotate (this.camera.up, -radAngleX, this.camera.center);
-		} else if (this.navigationMode === NavigationMode.FreeOrbit) {
-			let verticalDirection = CrossVector3D (horizontalDirection, viewDirection).Normalize ();
-			this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.camera.center);
-			this.camera.eye.Rotate (verticalDirection, -radAngleX, this.camera.center);
-			this.camera.up = verticalDirection;
-		}
-	}
-
 	Pan (moveX, moveY)
 	{
 		let viewDirection = SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
@@ -606,15 +567,25 @@ export class Navigation
 		this.callbacks.onUpdate ();
 	}
 
+	RotationOnX = (deltaY)=>
+	{
+		let orbitRatio = 1.0;
+		let delta_y = deltaY;
+		let step = deltaY > 0.0 ? 1.0 : -1.0;
+		while (delta_y >= 1.0 || delta_y <= -1.0) {
+			let move_diff = new Coord2D (0, step);
+			this.Orbit (move_diff.x * orbitRatio, move_diff.y * orbitRatio);
+			this.Update ();
+			delta_y -= step;
+		}
+	}
+
 	DoRotationOnY = ()=>
 	{
 		let orbitRatio = 0.5;
-		if (this.animationXYAngle > 10.0) this.animationXYAngle = 10.0;
-		if (this.animationXYAngle < -10.0) this.animationXYAngle = -10.0;
-		let angleX = Math.cos(MathUtils.degToRad(this.animationXYAngle));
-		let angleY = Math.sin(MathUtils.degToRad(this.animationXYAngle));
-		let move_diff = new Coord2D (angleX, angleY);
-		this.OrbitWithMaxAngleYChange (move_diff.x * orbitRatio, move_diff.y * orbitRatio);
+		let angleX = 1.0;
+		let move_diff = new Coord2D (angleX, 0.0);
+		this.Orbit (move_diff.x * orbitRatio, move_diff.y * orbitRatio);
 		this.Update ();
 	}
 
