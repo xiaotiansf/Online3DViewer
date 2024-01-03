@@ -567,6 +567,35 @@ export class Navigation
 		this.callbacks.onUpdate ();
 	}
 
+	ZoomInOut = (in_ratio)=>
+	{
+		let ratio = in_ratio;
+		let step = in_ratio > 0.0 ? 0.1 : -0.1;
+		while (ratio >= 0.1 || ratio <= -0.1) {
+			if (step > 0.0) {
+				this.ZoomIn();
+			}
+			else {
+				this.ZoomOut();
+			}
+			ratio -= step;
+		}
+	}
+
+	ZoomIn = ()=>
+	{
+		let ratio = 0.1;
+		this.Zoom (ratio);
+		this.Update ();
+	}
+
+	ZoomOut = ()=>
+	{
+		let ratio = -0.1;
+		this.Zoom (ratio);
+		this.Update ();
+	}
+
 	RotationOnX = (deltaY)=>
 	{
 		let orbitRatio = 1.0;
