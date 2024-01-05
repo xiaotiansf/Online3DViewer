@@ -3,9 +3,10 @@ const port = 9838;
 const host = '127.0.0.1';
 const timeout = 2000;
 let retrying = false;
+let socket = new net.Socket();
 
 // Functions to handle socket events
-function makeConnection (socket) {
+function MakeConnection (socket) {
    socket.connect(port, host);
 }
 
@@ -13,16 +14,10 @@ export class ClientSocket
 {
    constructor ()
    {
-      this.socket = new net.Socket();
       this.filename = null;
       this.zoom = 1.0;
       this.panX = 0.0;
       this.panY = 0.0;
-   }
-
-   MakeConnection = () =>
-   {
-      this.socket.connect(port, host);
    }
 
    Init()
@@ -31,7 +26,7 @@ export class ClientSocket
          console.log('connected');
          retrying = false;
       })
-      this.socket.on("data", data => {
+      socket.on("data", data => {
          console.log(data.toString());
          let cmd_string = data.toString();
          let hashtag_index = cmd_string.indexOf('#{');
@@ -51,29 +46,29 @@ export class ClientSocket
             console.log('received invalid string from palacio-display-server');
          }
       })
-      this.socket.on("end", () => {
+      socket.on("end", () => {
          console.log("Connection ended");
       })
-      this.socket.on("timeout", () => {
+      socket.on("timeout", () => {
          console.log('timeout');
       })
-      this.socket.on("drain", () => {
+      socket.on("drain", () => {
          console.log('drain');
       })
-      this.socket.on("error", () => {
+      socket.on("error", () => {
          console.log('error');
       })
-      this.socket.on("close", () => {
+      socket.on("close", () => {
          console.log('close');
          if (!retrying) {
             retrying = true;
             console.log('Reconnecting...');
          }
-         setTimeout(this.MakeConnection, timeout);
+         setTimeout(MakeConnection, timeout);
       })
 
       // Connect
       console.log('Connecting to ' + host + ':' + port + '...');
-      this.MakeConnection();
+      MakeConnection();
    }
 }
