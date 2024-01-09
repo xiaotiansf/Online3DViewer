@@ -28,7 +28,6 @@ import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
-import { ClientSocket } from './client.js';
 
 const WebsiteUIState =
 {
@@ -600,6 +599,70 @@ export class Website
         this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
         this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
         this.UpdateEnvironmentMap ();
+        this.InitSocket();
+    }
+
+    InitSocket ()
+    {
+        const timeout = 5000;
+        let retrying = false;
+        const socket = new WebSocket('ws://127.0.0.1:9839');
+
+        // Functions to handle socket events
+        function MakeConnection ()
+        {
+            // Connection opened
+            socket.addEventListener('open', function (event) {
+                socket.send('Hello Server!');
+                console.log('connected to palacio-display-server!');
+                retrying = false;
+            });
+        }
+
+        // Listen for messages
+        socket.addEventListener('message', function (event) {
+            console.log(event.data.toString());
+            let cmd_string = data.toString();
+            let hashtag_index = cmd_string.indexOf('#{');
+            if (hashtag_index > 0) {
+                let json = cmd_string.slice(hashtag_index+1);
+                const obj = JSON.parse(json);
+                console.log(obj.filename);
+                console.log(obj.info);
+                console.log(obj.direction);
+                console.log(obj.device_orientation);
+                console.log(obj.display_mode);
+                console.log(obj.zoom);
+                console.log(obj.assetDir);
+                this.filename = obj.filename;
+                this.LoadModelFromFileList(this.filename);
+            }
+            else {
+                console.log('received invalid string from palacio-display-server');
+            }
+        })
+
+        socket.addEventListener('close', function (event) {
+            console.log('Connection closed');
+            if (!retrying) {
+               retrying = true;
+               console.log('Reconnecting...');
+            }
+            setTimeout(MakeConnection, timeout);
+        })
+
+        socket.addEventListener('error', function (event) {
+            console.log('Connection error: failed and retry later');
+            if (!retrying) {
+               retrying = true;
+               console.log('Reconnecting...');
+            }
+            setTimeout(MakeConnection, timeout);
+        })
+
+        // Connect
+        console.log('Connecting to ws://127.0.0.1:9839...');
+        MakeConnection();
     }
 
     InitToolbar ()
