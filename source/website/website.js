@@ -28,6 +28,7 @@ import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
+import { ClientSocket } from './client.js';
 
 const WebsiteUIState =
 {

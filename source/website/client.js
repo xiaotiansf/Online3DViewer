@@ -1,13 +1,13 @@
-import WebSocket from 'ws';
 import { Website } from './website';
 const timeout = 5000;
 let retrying = false;
-const ws = new WebSocket('ws://127.0.0.1:9839');
+const socket = new WebSocket('ws://127.0.0.1:9839');
 
 // Functions to handle socket events
 function MakeConnection () {
-   ws.on('open', function open() {
-      ws.send('Hello, server!');
+   // Connection opened
+   socket.addEventListener('open', function (event) {
+      socket.send('Hello Server!');
       console.log('connected to palacio-display-server!');
       retrying = false;
    });
@@ -26,8 +26,9 @@ export class ClientSocket
 
    Init()
    {
-      ws.on('message', function message(data) {
-         console.log(data.toString());
+      // Listen for messages
+      socket.addEventListener('message', function (event) {
+         console.log(event.data.toString());
          let cmd_string = data.toString();
          let hashtag_index = cmd_string.indexOf('#{');
          if (hashtag_index > 0) {
@@ -48,7 +49,7 @@ export class ClientSocket
          }
       })
 
-      ws.on('close', function close() {
+      socket.addEventListener('close', function (event) {
          console.log('Connection closed');
          if (!retrying) {
             retrying = true;

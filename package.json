@@ -80,8 +80,7 @@
 		"rhino3dm": "8.0.1",
 		"supervisor": "^0.12.0",
 		"three": "0.158.0",
-		"web-ifc": "0.0.44",
-		"ws": "^8.16.0"
+		"web-ifc": "0.0.44"
 	},
 	"eslintConfig": {
 		"env": {
