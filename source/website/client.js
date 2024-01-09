@@ -1,32 +1,32 @@
-import net from 'net'
-const port = 9838;
-const host = '127.0.0.1';
-const timeout = 2000;
+import WebSocket from 'ws';
+import { Website } from './website';
+const timeout = 5000;
 let retrying = false;
-let socket = new net.Socket();
+const ws = new WebSocket('ws://127.0.0.1:9839');
 
 // Functions to handle socket events
-function MakeConnection (socket) {
-   socket.connect(port, host);
+function MakeConnection () {
+   ws.on('open', function open() {
+      ws.send('Hello, server!');
+      console.log('connected to palacio-display-server!');
+      retrying = false;
+   });
 }
 
 export class ClientSocket
 {
-   constructor ()
+   constructor (website)
    {
       this.filename = null;
       this.zoom = 1.0;
       this.panX = 0.0;
       this.panY = 0.0;
+      this.website = website;
    }
 
    Init()
    {
-      this.socket.on("connect", () => {
-         console.log('connected');
-         retrying = false;
-      })
-      socket.on("data", data => {
+      ws.on('message', function message(data) {
          console.log(data.toString());
          let cmd_string = data.toString();
          let hashtag_index = cmd_string.indexOf('#{');
@@ -41,25 +41,15 @@ export class ClientSocket
             console.log(obj.zoom);
             console.log(obj.assetDir);
             this.filename = obj.filename;
+            this.website.LoadModelFromFileList(this.filename);
          }
          else {
             console.log('received invalid string from palacio-display-server');
          }
       })
-      socket.on("end", () => {
-         console.log("Connection ended");
-      })
-      socket.on("timeout", () => {
-         console.log('timeout');
-      })
-      socket.on("drain", () => {
-         console.log('drain');
-      })
-      socket.on("error", () => {
-         console.log('error');
-      })
-      socket.on("close", () => {
-         console.log('close');
+
+      ws.on('close', function close() {
+         console.log('Connection closed');
          if (!retrying) {
             retrying = true;
             console.log('Reconnecting...');
@@ -68,7 +58,7 @@ export class ClientSocket
       })
 
       // Connect
-      console.log('Connecting to ' + host + ':' + port + '...');
+      console.log('Connecting to ws://127.0.0.1:9839...');
       MakeConnection();
    }
 }
