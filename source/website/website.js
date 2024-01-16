@@ -606,7 +606,7 @@ export class Website
     {
         const timeout = 5000;
         let retrying = false;
-        const socket = new WebSocket('ws://127.0.0.1:9839');
+        const socket = new WebSocket('ws://127.0.0.1:8080');
 
         // Functions to handle socket events
         function MakeConnection ()
@@ -617,6 +617,10 @@ export class Website
                 console.log('connected to palacio-display-server!');
                 retrying = false;
             });
+            if (socket.readyState !== socket.OPEN) {
+                console.log('Connection open: failed and retry later');
+                setTimeout(MakeConnection, timeout);
+            }
         }
 
         // Listen for messages
