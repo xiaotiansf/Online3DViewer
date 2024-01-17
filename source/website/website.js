@@ -638,9 +638,13 @@ export class Website
                     console.log(obj.device_orientation);
                     console.log(obj.display_mode);
                     console.log(obj.zoom);
-                    console.log(obj.assetDir);
-                    this.filename = obj.filename;
-                    this.LoadModelFromFileList(this.filename);
+                    if (obj.threedinfo.model_format !== '.glb'  &&
+                        obj.threedinfo.model_format !== '.gltf' &&
+                        obj.threedinfo.model_format !== '.fbx') {
+                        this.filename = obj.filename;
+                        console.log(obj.threedinfo.asset_dir);
+                        this.LoadModelFromFileList(this.filename);
+                    }
                 }
             }
             else {
