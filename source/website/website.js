@@ -624,12 +624,12 @@ export class Website
         }
 
         // Listen for messages
-        socket.addEventListener('message', function (event) {
+        socket.addEventListener('message', (event) => {
             console.log(event.data.toString());
-            let cmd_string = event.data.toString();
+            let cmd_string = event.composeddata.toString();
             let hashtag_index = cmd_string.indexOf('{');
             if (hashtag_index === 0) {
-                let json = cmd_string.slice(hashtag_index);
+                let json = cmd_string.slice(hashtag_index+1);
                 const obj = JSON.parse(json);
                 console.log(obj.filename);
                 console.log(obj.info);
@@ -646,7 +646,7 @@ export class Website
             }
         })
 
-        socket.addEventListener('close', function (event) {
+        socket.addEventListener('close', (event) => {
             console.log('Connection closed');
             if (!retrying) {
                retrying = true;
@@ -655,7 +655,7 @@ export class Website
             setTimeout(MakeConnection, timeout);
         })
 
-        socket.addEventListener('error', function (event) {
+        socket.addEventListener('error', (event) => {
             console.log('Connection error: failed and retry later');
             if (!retrying) {
                retrying = true;
@@ -665,7 +665,7 @@ export class Website
         })
 
         // Connect
-        console.log('Connecting to ws://127.0.0.1:8080...');
+        console.log('Connecting to ws://127.0.0.1:...');
         MakeConnection();
     }
 
