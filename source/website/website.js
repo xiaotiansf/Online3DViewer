@@ -631,15 +631,17 @@ export class Website
             if (hashtag_index === 0) {
                 let json = cmd_string.slice(hashtag_index+1);
                 const obj = JSON.parse(json);
-                console.log(obj.filename);
-                console.log(obj.info);
-                console.log(obj.direction);
-                console.log(obj.device_orientation);
-                console.log(obj.display_mode);
-                console.log(obj.zoom);
-                console.log(obj.assetDir);
-                this.filename = obj.filename;
-                this.LoadModelFromFileList(this.filename);
+                if (obj.cmd === 'model') {
+                    console.log(obj.filename);
+                    console.log(obj.info);
+                    console.log(obj.direction);
+                    console.log(obj.device_orientation);
+                    console.log(obj.display_mode);
+                    console.log(obj.zoom);
+                    console.log(obj.assetDir);
+                    this.filename = obj.filename;
+                    this.LoadModelFromFileList(this.filename);
+                }
             }
             else {
                 console.log('received invalid string from palacio-display-server');
